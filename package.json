@@ -13,6 +13,7 @@
     "@google/generative-ai": "^0.17.0",
     "deepl-node": "^1.13.1",
     "dotenv": "^16.4.5",
+    "git-filter-repo": "^0.0.30",
     "node-fetch": "^3.3.2",
     "openai": "^3.2.1",
     "react": "^18.2.0",
