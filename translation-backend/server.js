@@ -1,7 +1,7 @@
-const express = require('express');
-const { Pool } = require('pg');
-const bodyParser = require('body-parser');
-const cors = require('cors');
+const express = require("express");
+const { Pool } = require("pg");
+const bodyParser = require("body-parser");
+const cors = require("cors");
 
 const app = express();
 const port = process.env.PORT || 5000;
@@ -12,10 +12,10 @@ app.use(bodyParser.json());
 
 // Database connection
 const pool = new Pool({
-  user: "my_postgres_g7fx_user",
-  host: "dpg-cqcnmsogph6c73d4tah0-a",
-  database: "my_postgres_g7fx",
-  password: "BSDIjY9fGQgoHn0MJAgKfs0Pc2CoH3S8",
+  user: "my_postgres_new_x6ga_user",
+  host: "dpg-cro3sf88fa8c738nb8h0-a",
+  database: "my_postgres_new_x6ga",
+  password: "6bOAcbT0KUmzffSUpZt5NxqKMqGnP98G",
   port: 5432,
 });
 
@@ -36,7 +36,7 @@ const createTableIfNotExists = async () => {
     await pool.query(createTableQuery);
     console.log('Table "translations" is ready.');
   } catch (error) {
-    console.error('Error creating table:', error);
+    console.error("Error creating table:", error);
   }
 };
 
@@ -44,22 +44,22 @@ const createTableIfNotExists = async () => {
 createTableIfNotExists();
 
 // Route for handling POST requests
-app.post('/api/translations', async (req, res) => {
+app.post("/api/translations", async (req, res) => {
   const { original_message, translated_message, language, model } = req.body;
   if (!original_message || !translated_message || !language || !model) {
-    res.status(400).json({ error: 'Missing required fields' });
+    res.status(400).json({ error: "Missing required fields" });
     return;
   }
 
   try {
     const result = await pool.query(
-      'INSERT INTO translations (original_message, translated_message, language, model) VALUES ($1, $2, $3, $4) RETURNING *',
+      "INSERT INTO translations (original_message, translated_message, language, model) VALUES ($1, $2, $3, $4) RETURNING *",
       [original_message, translated_message, language, model]
     );
     res.status(201).json(result.rows[0]);
   } catch (error) {
-    console.error('Database insertion error:', error);
-    res.status(500).json({ error: 'Database insertion error' });
+    console.error("Database insertion error:", error);
+    res.status(500).json({ error: "Database insertion error" });
   }
 });
 

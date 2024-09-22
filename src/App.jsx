@@ -1,19 +1,30 @@
 import React, { useState } from "react";
 import "./App.css";
 import { Configuration, OpenAIApi } from "openai";
+import { GoogleGenerativeAI } from "@google/generative-ai";
 import { BeatLoader } from "react-spinners";
 
 const App = () => {
-  const [formData, setFormData] = useState({ language: "Hindi", message: "" ,model: "gpt-4"});
+  const [formData, setFormData] = useState({
+    language: "Hindi",
+    message: "",
+    model: "gemini-1.5-flash",
+  });
   const [error, setError] = useState("");
   const [showNotification, setShowNotification] = useState(false);
   const [translation, setTranslation] = useState("");
   const [isLoading, setIsLoading] = useState(false);
 
+  const googleGenAI = new GoogleGenerativeAI(
+    import.meta.env.VITE_GOOGLE_API_KEY
+  ); // Google API Key
+
   const configuration = new Configuration({
-    apiKey: import.meta.env.VITE_OPENAI_KEY,
+    apiKey: import.meta.env.VITE_OPENAI_KEY, // OpenAI API Key
   });
   const openai = new OpenAIApi(configuration);
+
+  const deeplApiKey = import.meta.env.VITE_DEEPL_API_KEY; // DeepL API Key
 
   const handleInputChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -22,46 +33,74 @@ const App = () => {
 
   const translate = async () => {
     const { language, message, model } = formData;
-  
+
     try {
       setIsLoading(true);
-      const response = await openai.createChatCompletion({
-        model: model,
-        messages: [
-          { role: "system", content: `You will be provided with a sentence in English, and your task is to translate it into ${language}.` },
-          { role: "user", content: message },
-        ],
-        temperature: 0.3,
-        max_tokens: 100,
-        top_p: 1,
-        frequency_penalty: 0.0,
-        presence_penalty: 0.0,
-      });
-  
-      const translatedText = response.data.choices[0].message.content.trim();
+
+      let translatedText = "";
+
+      if (model.startsWith("gpt")) {
+        const response = await openai.createChatCompletion({
+          model: model,
+          messages: [
+            {
+              role: "system",
+              content: `Translate this sentence into ${language}.`,
+            },
+            { role: "user", content: message },
+          ],
+          temperature: 0.3,
+          max_tokens: 100,
+        });
+        translatedText = response.data.choices[0].message.content.trim();
+      } else if (model === "gemini") {
+        const genAIModel = googleGenAI.getGenerativeModel({
+          model: "gemini-1.5-flash",
+        });
+        const prompt = `Translate the text: ${message} into ${language}`;
+
+        const result = await genAIModel.generateContent(prompt);
+        const response = await result.response;
+        const text = response.text();
+
+        translatedText = response.text();
+      } else if (model === "deepl") {
+        const genAIModel = googleGenAI.getGenerativeModel({
+          model: "gemini-1.5-flash",
+        });
+        const prompt = `Translate the text: ${message} into ${language}`;
+
+        const result = await genAIModel.generateContent(prompt);
+        const response = await result.response;
+        const text = response.text();
+        translatedText = response.text();
+      }
+
       setTranslation(translatedText);
       setIsLoading(false);
-  
+
       // Send translation result to the backend
-      await fetch('https://translation-app-ooq8.onrender.com/api/translations', { 
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          original_message: message,
-          translated_message: translatedText,
-          language: language,
-          model: model,
-        }),
-      });
+      await fetch(
+        "https://translation-app-ooq8.onrender.com/api/translations",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            original_message: message,
+            translated_message: translatedText,
+            language: language,
+            model: model,
+          }),
+        }
+      );
     } catch (error) {
       console.error("Translation error:", error);
       setError("Translation failed. Please try again.");
       setIsLoading(false);
     }
   };
-  
 
   const handleOnSubmit = (e) => {
     e.preventDefault();
@@ -91,12 +130,13 @@ const App = () => {
       <h1>Translation</h1>
 
       <form onSubmit={handleOnSubmit}>
-      <div className="choices">
+        <div className="choices">
           <input
             type="radio"
             id="gpt-3.5-turbo"
             name="model"
             value="gpt-3.5-turbo"
+            checked={formData.model === "gpt-3.5-turbo"}
             onChange={handleInputChange}
           />
           <label htmlFor="gpt-3.5-turbo">gpt-3.5</label>
@@ -106,7 +146,7 @@ const App = () => {
             id="gpt-4"
             name="model"
             value="gpt-4"
-            defaultChecked={formData.model === "gpt-4"}
+            checked={formData.model === "gpt-4"}
             onChange={handleInputChange}
           />
           <label htmlFor="gpt-4">gpt-4</label>
@@ -116,17 +156,39 @@ const App = () => {
             id="gpt-4-turbo"
             name="model"
             value="gpt-4-turbo"
+            checked={formData.model === "gpt-4-turbo"}
             onChange={handleInputChange}
           />
           <label htmlFor="gpt-4-turbo">gpt-4-turbo</label>
+
+          <input
+            type="radio"
+            id="gemini"
+            name="model"
+            value="gemini"
+            checked={formData.model === "gemini"}
+            onChange={handleInputChange}
+          />
+          <label htmlFor="gemini">Gemini</label>
+
+          <input
+            type="radio"
+            id="deepl"
+            name="model"
+            value="deepl"
+            checked={formData.model === "deepl"}
+            onChange={handleInputChange}
+          />
+          <label htmlFor="deepl">DeepL</label>
         </div>
+
         <div className="choices">
           <input
             type="radio"
             id="hindi"
             name="language"
             value="Hindi"
-            defaultChecked={formData.language === "Hindi"}
+            checked={formData.language === "Hindi"}
             onChange={handleInputChange}
           />
           <label htmlFor="hindi">Hindi</label>
@@ -136,6 +198,7 @@ const App = () => {
             id="spanish"
             name="language"
             value="Spanish"
+            checked={formData.language === "Spanish"}
             onChange={handleInputChange}
           />
           <label htmlFor="spanish">Spanish</label>
@@ -145,6 +208,7 @@ const App = () => {
             id="french"
             name="language"
             value="French"
+            checked={formData.language === "French"}
             onChange={handleInputChange}
           />
           <label htmlFor="french">French</label>
@@ -154,6 +218,7 @@ const App = () => {
             id="telugu"
             name="language"
             value="Telugu"
+            checked={formData.language === "Telugu"}
             onChange={handleInputChange}
           />
           <label htmlFor="telugu">Telugu</label>
@@ -163,6 +228,7 @@ const App = () => {
             id="japanese"
             name="language"
             value="Japanese"
+            checked={formData.language === "Japanese"}
             onChange={handleInputChange}
           />
           <label htmlFor="japanese">Japanese</label>
@@ -171,6 +237,7 @@ const App = () => {
         <textarea
           name="message"
           placeholder="Type your message here.."
+          value={formData.message}
           onChange={handleInputChange}
         ></textarea>
 

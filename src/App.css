@@ -1,74 +1,56 @@
 * {
-  font-family: "Roboto", sans-serif;
+  font-family: "Inter", sans-serif;
   box-sizing: border-box;
 }
 
 body {
   margin: 0;
-  background: url('https://images.unsplash.com/photo-1506104489822-562ca25152fe?q=80&w=2069&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D') no-repeat center center fixed; 
-  background-size: cover;
-  color: #333; 
+  background: #eef5db;
+  color: #fe5f55;
 }
+
 h1 {
-  margin: 0;
-  color: #4a4a4a; 
+  margin-top: 0;
+  color: #ff5733;
   text-align: center;
-  font-family: "Montserrat", sans-serif;
-  font-size: 2.5rem;
+  font-family: "Poppins", sans-serif;
 }
 
 .container {
-  max-width: 500px;
-  margin: 40px auto;
-  background: #ffffff; 
-  border-radius: 12px;
-  padding: 24px;
-  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.1);
-  position: relative; /* For background image positioning */
-  z-index: 1; /* Ensure it appears above the background */
-}
-
-.container::before {
-  content: '';
-  position: absolute;
-  top: -20px;
-  left: -20px;
-  right: -20px;
-  bottom: -20px;
-  background: rgba(255, 255, 255, 0.1);
-  border-radius: 12px;
-  z-index: -1; /* Place behind the container */
+  max-width: 600px;
+  margin: 32px auto;
+  background: #333333;
+  padding: 16px 32px;
+  box-shadow: 0 4px 40px -8px rgba(0, 0, 0, 0.2);
 }
 
 .container form {
   display: flex;
   flex-direction: column;
-  gap: 24px;
+  gap: 16px;
 }
 
 .container form label {
-  background: #e2e8f0; 
-  color: #333; 
-  height: 50px;
-  width: 120px;
+  background: #d6d1b1;
+  color: #fe5f55;
+  height: 40px;
+  width: 100px;
   display: flex;
-  border-radius: 20px;
+  border-radius: 30px;
   align-items: center;
   justify-content: center;
   cursor: pointer;
-  transition: background 0.3s, color 0.3s;
 }
 
 .container form input[type="radio"]:checked + label {
-  background: #4a90e2; 
-  color: #ffffff; 
+  background: #fe5f55;
+  color: #fff;
   font-weight: bold;
 }
 
 .container .choices {
   display: flex;
-  gap: 15px;
-  justify-content: center;
+  gap: 20px;
 }
 
 .container form input[type="radio"] {
@@ -77,45 +59,31 @@ h1 {
 
 .container textarea {
   padding: 16px;
-  font-size: 1rem;
-  height: 120px;
+  font-size: 20px;
+  height: 140px;
   resize: none;
-  line-height: 1.5;
-  border: 1px solid #ccc; 
-  border-radius: 8px;
-  transition: border-color 0.3s;
-}
-
-.container textarea:focus {
-  border-color: #4a90e2; 
-  outline: none;
+  line-height: 1.7;
+  border: 1px solid #fe5f55;
 }
 
 .container button {
-  padding: 12px;
-  font-size: 1rem;
+  padding: 8px;
+  font-size: 20px;
   border: none;
-  border-radius: 8px;
-  background: #4a90e2; 
-  color: #ffffff; 
+  background: #fe5f55;
+  color: #fff;
   cursor: pointer;
-  transition: background 0.3s;
-}
-
-.container button:hover {
-  background: #357ab8; 
 }
 
 .translation {
-  padding: 16px;
-  background: #f9f9f9; 
+  padding: 12px 32px;
+  background: #fff;
   margin-top: 20px;
-  font-size: 1rem;
-  line-height: 1.5;
+  font-size: 20px;
+  line-height: 1.7;
   height: 140px;
-  overflow-y: auto;
-  border: 1px solid #ccc; 
-  border-radius: 8px;
+  overflow-y: scroll;
+  position: relative;
 }
 
 .translation .copy-btn {
@@ -123,28 +91,26 @@ h1 {
   width: 20px;
   top: 12px;
   right: 12px;
-  opacity: 0.8;
+  opacity: 0.7;
   cursor: pointer;
 }
 
 .notification {
   position: fixed;
-  bottom: 20px;
+  bottom: 0;
   left: 50%;
   transform: translate(-50%, 100px);
-  background: #4a90e2; 
-  color: #ffffff; 
-  padding: 14px 28px;
-  border-radius: 25px;
-  transition: transform 400ms ease, opacity 400ms ease;
-  opacity: 0.9;
+  background: #fe5f55;
+  color: #fff;
+  padding: 12px 24px;
+  border-radius: 30px;
+  transition: all 400ms ease;
 }
 
 .notification.active {
-  transform: translate(-50%, -20px);
+  transform: translate(-50%, -30px);
 }
 
 .error {
-  color: #ff4d4f;
-  font-size: 0.9rem;
+  color: red;
 }
